@@ -1,3 +1,3 @@
-# recipeManager-api
+# goal-tracker-api
 
-this is the api development repostiory for recipe manager server api
+this is the api development repository for goal tracker server api
