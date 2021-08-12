@@ -2,12 +2,12 @@ const express = require("express");
 
 const PostMessage = require("../models/postMessage.js");
 const mongoose = require("mongoose");
-
-const auth = require("../middleware/auth.js");
 const router = express.Router();
 
+const auth = require("../middleware/auth.js");
 
-const getPosts = async (req, res) => {
+
+export const getPosts = async (req, res) => {
     try {
         const postMessages = await PostMessage.find();
 
@@ -17,7 +17,7 @@ const getPosts = async (req, res) => {
     }
 }
 
-const getPost = async (req, res) => {
+export const getPost = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -29,10 +29,10 @@ const getPost = async (req, res) => {
     }
 }
 
-const createPost = async (req, res) => {
-    const { title, message, selectedFile, creator, tags } = req.body;
+export const createPost = async (req, res) => {
+    const post = req.body;
 
-    const newPostMessage = new PostMessage({ title, message, selectedFile, creator, tags })
+    const newPostMessage = new PostMessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() })
 
     try {
         await newPostMessage.save();
@@ -43,7 +43,7 @@ const createPost = async (req, res) => {
     }
 }
 
-const updatePost = async (req, res) => {
+export const updatePost = async (req, res) => {
     const { id } = req.params;
     const { title, message, creator, selectedFile, tags } = req.body;
 
@@ -56,7 +56,7 @@ const updatePost = async (req, res) => {
     res.json(updatedPost);
 }
 
-const deletePost = async (req, res) => {
+export const deletePost = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
@@ -66,7 +66,7 @@ const deletePost = async (req, res) => {
     res.json({ message: "Post deleted successfully." });
 }
 
-const likePost = async (req, res) => {
+export const likePost = async (req, res) => {
     const { id } = req.params;
 
     if (!req.userId) {
@@ -87,6 +87,7 @@ const likePost = async (req, res) => {
     const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
     res.status(200).json(updatedPost);
 }
+
 
 
 router.get('/', getPosts);
